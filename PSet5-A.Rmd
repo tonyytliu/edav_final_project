@@ -19,8 +19,7 @@ Yitao Liu (yl4343), Boyu Liu(bl2788), Yiyang Sun(ys3284)
 
 b) How do you plan to divide up the work? (Grading is on a group basis. The point of asking is to encourage you to think about this.)
 First of all, we want to do the data preprocessing first together. 
-Then we will split the work by exploring at different aspects of the data (spatial, quantative). 
-
+Then we will split the work by exploring at different aspects of the data. Specifically, everyone will focus on one of the three questions.
 
 
 ### 2. The Questions

@@ -41,18 +41,6 @@ c) Whether thers is correlation between number of deaths and time or region.
 
 We choose html_document as the output format.
 
-(You don't have to use the same format for this assignment -- PSet 5, part A -- and the final project itself.)
-
-Choices are: 
-
-pdf_document  
-
-html_document  
-
-bookdown book: https://bookdown.org/yihui/bookdown/
-
-shiny app: https://shiny.rstudio.com/  
-
 
 (Remember that it's ok to have pieces of the project that don't fit into the chosen output format; in those cases you can provide links to the relevant material.)
 

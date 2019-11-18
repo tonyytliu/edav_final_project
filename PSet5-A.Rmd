@@ -15,9 +15,12 @@ This assignment is designed to help you get started on the final project. Be sur
 [2 points]
 
 a) Who's on the team? (Include names and UNIs)
-
+Yitao Liu (yl4343), Boyu Liu(bl2788), Yiyang Sun(ys3284)
 
 b) How do you plan to divide up the work? (Grading is on a group basis. The point of asking is to encourage you to think about this.)
+First of all, we want to do the data preprocessing first together. 
+Then we will split the work by exploring at different aspects of the data (spatial, quantative). 
+
 
 
 ### 2. The Questions
@@ -26,19 +29,21 @@ b) How do you plan to divide up the work? (Grading is on a group basis. The poin
 
 List three questions that you hope you will be able to answer from your research.
 
-a)
+a) With time going, how voilence pattern changes in all regions.
 
-b)
+b) What's the difference for conflict patterns in different regions.
 
-c)
+c) Whether thers is correlation between number of deaths and time or region. 
 
 ### 3. Which output format do you plan to use to submit the project? 
 
 [2 points]
 
+We choose html_document as the output format.
+
 (You don't have to use the same format for this assignment -- PSet 5, part A -- and the final project itself.)
 
-Choices are:
+Choices are: 
 
 pdf_document  
 
@@ -57,6 +62,8 @@ What is your data source?  What is your method for importing data? Please be spe
 
 [5 points]
 
+UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (https://ucdp.uu.se/downloads/index.html#ged_global)
+The dataset has a RData version which we can directly load using R, so we don't have any  obstacle. 
 
 ### 5. Provide a short summary, including 2-3 graphs, of your initial investigations. 
 

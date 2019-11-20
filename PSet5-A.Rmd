@@ -1,8 +1,7 @@
 ---
 author:
 title: "EDAV Fall 2019 PSet 5, part A"
-output: pdf_document
-
+output: html_document
 ---
 ```{r, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = TRUE)
@@ -51,6 +50,46 @@ What is your data source?  What is your method for importing data? Please be spe
 
 UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (https://ucdp.uu.se/downloads/index.html#ged_global)
 The dataset has a RData version which we can directly load using R, so we don't have any  obstacle. 
+
+The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the following studies, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date, as follows:
+
+```{r}
+df_0 <- data.frame(id=c(01,02), date_start=c("2000-01-01", "2000-01-01"),
+                   date_end=c("2000-01-01", "2000-01-03"),
+                   death=c(10,90))
+df_1 <- data.frame(id=c(01,02, 02, 02), 
+                   date_start=c("2000-01-01", "2000-01-01", "2000-01-01", "2000-01-01"),
+                   date_end=c("2000-01-01", "2000-01-03", "2000-01-03", "2000-01-03"),
+                   dates = c("2000-01-01", "2000-01-01", "2000-01-02", "2000-01-03"),
+                   death=c(10,90,90,90),
+                   avg_death = c(10,30,30,30))
+```
+
+transform
+```{r}
+knitr::kable(df_0)
+```
+
++----+------------+------------+-------+
++ id + date_start +  date_end  + death + 
++----+------------+------------+-------+
++ 01 + 2000-01-01 + 2000-01-01 +   10  +
++ 02 + 2000-01-01 + 2000-01-03 +   90  +
++----+------------+------------+-------+
+
+to
+```{r}
+knitr::kable(df_1)
+```
+
++----+------------+------------+------------+-------+-----------+
++ id + date_start +  date_end  +    dates   + death + avg_death +
++----+------------+------------+------------+-------+-----------+
++ 01 + 2000-01-01 + 2000-01-01 + 2000-01-01 +   10  +     10    +
++ 02 + 2000-01-01 + 2000-01-03 + 2000-01-01 +   90  +     30    +
++ 02 + 2000-01-01 + 2000-01-03 + 2000-01-02 +   90  +     30    +
++ 02 + 2000-01-01 + 2000-01-03 + 2000-01-03 +   90  +     30    +
++----+------------+------------+------------+-------+-----------+
 
 ### 5. Provide a short summary, including 2-3 graphs, of your initial investigations. 
 

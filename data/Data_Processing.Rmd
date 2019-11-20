@@ -66,6 +66,6 @@ df_new <- df_new %>%
 
 Save Data
 ```{r}
-
+save(df_new, file = here("data", "clean", "df_new.RData"))
 ```
 

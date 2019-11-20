@@ -398,23 +398,8 @@ summary {
 <div id="the-data" class="section level3">
 <h3>4. The Data</h3>
 <p>[5 points]</p>
-<p>UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (<a href="https://ucdp.uu.se/downloads/index.html#ged_global" class="uri">https://ucdp.uu.se/downloads/index.html#ged_global</a>) The dataset has a RData version which we can directly load using R, so we don’t have any obstacle. The dataset contains records of armed conflicts that take place in the world from 1989 to 2018. The data include information like countries/parties of the conflict, its start and end times, the number of deaths caused by the conflict, etc. &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
-<p>=======</p>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>0fb4cbbbd9359857bd610c4ed9394e98a494773c The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the future studies of this project, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or mothn, as follows (the example below is based on date):</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
+<p>UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (<a href="https://ucdp.uu.se/downloads/index.html#ged_global" class="uri">https://ucdp.uu.se/downloads/index.html#ged_global</a>) The dataset has a RData version which we can directly load using R, so we don’t have any obstacle. The dataset contains records of armed conflicts that take place in the world from 1989 to 2018. The data include information like countries/parties of the conflict, its start and end times, the number of deaths caused by the conflict, etc.</p>
+<p>The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the future studies of this project, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or mothn, as follows (the example below is based on date):</p>
 <p>The transformed dataset is on our <a href="https://github.com/tonyytliu/edav_final_project">Project GitHub Repo</a>.</p>
 <pre class="r"><code>df_0 &lt;- data.frame(id=c(01,02), date_start=c(&quot;2000-01-01&quot;, &quot;2000-01-01&quot;),
                    date_end=c(&quot;2000-01-01&quot;, &quot;2000-01-03&quot;),

@@ -90,11 +90,8 @@ knitr::kable(df_1)
 
 [10 points]
 
-<<<<<<< HEAD
 In the initial investigations, we examined the number of conflicts that occurred in each year, the number of conflict-caused deaths in each year, and the geometric distribution of the conflict. Our summaries of those investigations are included in the following four subsections.
 
-=======
->>>>>>> 0fb4cbbbd9359857bd610c4ed9394e98a494773c
 #### 1. Number of conflicts based on year
 ```{r}
 # Load the Dataset

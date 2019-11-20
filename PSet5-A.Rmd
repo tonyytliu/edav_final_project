@@ -5,6 +5,11 @@ output: html_document
 ---
 ```{r, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = TRUE)
+library(dplyr)
+library(here)
+library(ggplot2)
+library(ggpubr)
+library(scales)
 ```
 
 This assignment is designed to help you get started on the final project. Be sure to review the final project instructions (https://edav.info/project.html), in particular the new section on reproducible workflow (https://edav.info/project.html#reproducible-workflow), which summarizes principles that we've discussed in class.
@@ -14,9 +19,11 @@ This assignment is designed to help you get started on the final project. Be sur
 [2 points]
 
 a) Who's on the team? (Include names and UNIs)
+
 Yitao Liu (yl4343), Boyu Liu(bl2788), Yiyang Sun(ys3284)
 
 b) How do you plan to divide up the work? (Grading is on a group basis. The point of asking is to encourage you to think about this.)
+
 First of all, we want to do the data preprocessing first together. 
 Then we will split the work by exploring at different aspects of the data. Specifically, everyone will focus on one of the three questions.
 
@@ -39,19 +46,17 @@ c) Whether thers is correlation between number of deaths and time or region.
 
 We choose html_document as the output format.
 
-
-(Remember that it's ok to have pieces of the project that don't fit into the chosen output format; in those cases you can provide links to the relevant material.)
-
 ### 4. The Data
-
-What is your data source?  What is your method for importing data? Please be specific. Provide relevant information such as any obstacles you're encountering and what you plan to do to overcome them.
 
 [5 points]
 
 UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (https://ucdp.uu.se/downloads/index.html#ged_global)
-The dataset has a RData version which we can directly load using R, so we don't have any  obstacle. 
+The dataset has a RData version which we can directly load using R, so we don't have any  obstacle. The dataset contains records of armed conflicts that take place in the world from 1989 to 2018. The data include information like countries/parties of the conflict, its start and end times, the number of deaths caused by the conflict, etc.
 
-The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the following studies, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date, as follows:
+
+The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the future studies of this project, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or mothn, as follows (the example below is based on date):
+
+The transformed dataset is on our [Project GitHub Repo](https://github.com/tonyytliu/edav_final_project).
 
 ```{r}
 df_0 <- data.frame(id=c(01,02), date_start=c("2000-01-01", "2000-01-01"),
@@ -79,3 +84,138 @@ knitr::kable(df_1)
 ### 5. Provide a short summary, including 2-3 graphs, of your initial investigations. 
 
 [10 points]
+
+In the initial investigations, we examined the number of conflicts that occurred in each year, the number of conflict-caused deaths in each year, and the geometric distribution of the conflict. Our summaries of those investigations are included in the following four subsections.
+
+#### 1. Number of conflicts based on year
+```{r}
+# Load the Dataset
+load(here("data", "raw", "ged191.RData"))
+df_process <- ged191 %>%
+              mutate(date_start = as.Date(date_start),
+                     date_end = as.Date(date_end))
+df_count <- df_process %>%
+            group_by(year) %>%
+            tally()
+```
+
+
+```{r, fig.width=5, fig.height=3}
+ggplot(df_count, aes(x = year, y = n)) +
+      geom_bar(stat = "identity", fill = "steelblue") +
+      ggtitle("Number of conflicts based on year") +
+      labs(y = "number of conflicts")
+```
+
+As shown in the bar chart, the number of conflicts that occur in each year tends to increase from 1998 to 2018. The number of conflicts is lowest in 1997-98.
+
+#### 2. Distribution of the number of deaths based on conflict
+```{r, fig.width=10}
+g1 <- ggplot(df_process, aes(x = best)) + 
+        geom_histogram(bins = 20, colour = "#80593D", fill = "steelblue") +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of conflicts deaths")
+# only small values
+df_process2 <- df_process %>%
+              filter(best < 100)
+g2<- ggplot(df_process2, aes(x = best)) + 
+        geom_histogram(bins = 100, colour = "#80593D", fill = "steelblue") +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of conflicts deaths",
+                subtitle = "with death < 100")
+
+df_process3 <- df_process %>%
+              filter(best < 20)
+g3<- ggplot(df_process3, aes(x = best)) + 
+        geom_histogram(bins = 20, colour = "#80593D", fill = "steelblue") +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of conflicts deaths",
+                subtitle = "with death < 20")
+
+df_process4<- df_process %>%
+              filter(best >= 10000)
+g4<- ggplot(df_process4, aes(x = best)) + 
+        geom_histogram(bins = 20, colour = "#80593D", fill = "steelblue", boundary=10000) +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of conflicts deaths",
+                subtitle = "with death >= 10,000")
+
+ggarrange(g1, g2, g3, g4, ncol = 2, nrow = 2)
+```
+```{r}
+# The conflict with largest death
+df_2<- head(df_process[order(-df_process$best),], 10)[c("side_a", "side_b", "year", "best")]
+knitr::kable(df_2)
+```
+
+As shown in the top-left plot, the dataset is highly skewed and imbalanced.  When we focus on the data with death less than 100 people, we can see the data are more concentrated in <20 regions. Most conflicts have less than five deaths.
+
+We also see that there are several conflicts with an extremely high number of deaths (>10,000). After an investigation of those conflicts, we found out most of them are related to the [Rwanda genocide](https://en.wikipedia.org/wiki/Rwandan_genocide), which was taken place in 1994.
+
+(Note: `best` variable in the dataset means the best estimatation of the death in the conflict).
+
+#### 3. Number of deaths based on year
+
+```{r}
+# get conflicts' deaths by year
+df_sum <- df_process %>%
+            group_by(year) %>%
+            summarise_at(vars(best), funs(sum))
+
+
+# get conflicts related with the Rwanda genocide
+df_rwa <- df_process %>%
+          filter(side_a == "Government of Rwanda",
+                 side_b == "Civilians",
+                 date_end <= as.Date("1994-07-31"),
+                 date_start >= as.Date("1994-04-01"))
+# get conflicts' deaths by year without the Rwanda genocide
+df_sum2 <- df_process %>%
+            filter(!(df_process$id %in% df_rwa$id)) %>%
+            group_by(year) %>%
+            summarise_at(vars(best), funs(sum))
+```
+
+```{r, fig.width=10, fig.height=3}
+g5<- ggplot(df_sum, aes(x = year, y = best)) +
+        geom_bar(stat = "identity", fill = "steelblue") +
+        ggtitle("Deaths caused by conflicts based on year") +
+        labs(y = "number of deaths")
+
+g6<- ggplot(df_sum2, aes(x = year, y = best)) +
+        geom_bar(stat = "identity", fill = "steelblue") +
+        ggtitle("Deaths caused by conflicts based on year",
+                subtitle="without the data of the Rwanda genocide") +
+        labs(y = "number of deaths")
+
+ggarrange(g5, g6, ncol = 2, nrow = 1)
+```
+
+The conflict-caused deaths are extremely high in 1994, as shown in the left plot. As mentioned in the previous point,  a high number of deaths were probably related to the Rwanda genocide. When we filter out the data related to the Rwanda genocide, we get the plot on the right. The conflict-caused death per year decreased from 1989 until 2005, after 2005, the number tends to increase.
+
+#### 4. Location of conflicts
+```{r, fig.width=10,fig.height=6}
+# template code for plotting map from  https://stackoverflow.com/questions/30706124/plotting-the-world-map-in-r
+
+WorldData <- map_data('world') %>% filter(region != "Antarctica") %>% fortify
+
+temp <- df_process %>% filter(year %in% c(1990,2000,2010,2018))
+
+ggplot() + 
+    geom_map(data = WorldData, map = WorldData,
+                  aes(x = long, y = lat, group = group, map_id=region),
+                  fill = "white", colour = "#7f7f7f", size=0.1) + 
+    geom_point(data=temp, aes(x=longitude, y=latitude),
+               size=0.3, alpha=0.5, color="steelblue") +
+    coord_map("rectangular", lat0=0, xlim=c(-180,180), ylim=c(-60, 90)) +
+    facet_wrap(~year, ncol=2) +
+    scale_fill_continuous(low="thistle2", high="darkred", guide="colorbar") +
+    scale_y_continuous(breaks=c()) +
+    scale_x_continuous(breaks=c()) +
+    labs(fill="legend", title="Location of conflicts in Year XXXX", x="", y="") +
+    theme_bw()
+```
+
+We chose four years (1990, 2000, 2010, 2018) to check the locations of conflict for this problem set. As shown in the map plots above, the rough geometrical distribution of the conflicts seems to have little changes. Most of the conflicts in all of those four years took place in Latin America, Africa, the Middle East, South Asia, and the Philippines.
+
+However,  if we take a look closely, the location patterns still have some changes across the years. For example, Mexico had only a few conflicts in 2000, but in 2010 and 2018, its numbers of conflicts increased. Another example, the number of conflicts in  Sri Lanka decreased when comparing its numbers in 1990/2000 with the numbers 2010/2018, which is probably a result of the end of the Sri Lankan Civil War in 2009.

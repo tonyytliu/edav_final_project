@@ -1,0 +1,71 @@
+---
+title: "Data_Clean"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(here)
+```
+
+```{r}
+# Load the Dataset
+load(here("data", "raw", "ged191.RData"))
+```
+
+```{r}
+df_process <- ged191 %>%
+            mutate(date_start = as.Date(date_start)) %>%
+            mutate(date_end = as.Date(date_end))
+```
+Add the duration of each conflicts.
+```{r}
+df_process$duration = df_process$date_end - df_process$date_start + 1
+```
+
+Expand the data frame based on dates, that is
+
+transform
++----+------------+------------+
++ id + date_start +  date_end  +
++----+------------+------------+
++ 01 + 2000-01-01 + 2000-01-01 +
++ 02 + 2000-01-01 + 2000-01-03 +
++----+------------+------------+
+
+to
+
++----+------------+------------+------------+
++ id + date_start +  date_end  +    date    +
++----+------------+------------+------------+
++ 01 + 2000-01-01 + 2000-01-01 + 2000-01-01 +
++ 02 + 2000-01-01 + 2000-01-03 + 2000-01-01 +
++ 02 + 2000-01-01 + 2000-01-03 + 2000-01-02 +
++ 02 + 2000-01-01 + 2000-01-03 + 2000-01-03 +
++----+------------+------------+------------+
+
+
+```{r}
+temp <- df_process %>%
+        rowwise() %>%
+        do(data.frame(id = .$id, dates=seq(.$date_start,.$date_end,by="1 day")))
+
+df_new <- merge(df_process, temp, by="id")
+```
+```{r}
+df_new <- df_new %>%
+          mutate(avg_deaths_a = deaths_a/as.numeric(duration),
+                 avg_deaths_b = deaths_b/as.numeric(duration),
+                 avg_deaths_civilians = deaths_civilians/as.numeric(duration),
+                 avg_deaths_unknown = deaths_unknown/as.numeric(duration),
+                 avg_best = best/as.numeric(duration),
+                 avg_high = high/as.numeric(duration),
+                 avg_low = low/as.numeric(duration))
+```
+
+Save Data
+```{r}
+
+```
+

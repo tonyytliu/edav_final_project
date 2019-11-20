@@ -399,7 +399,7 @@ summary {
 <h3>4. The Data</h3>
 <p>[5 points]</p>
 <p>UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (<a href="https://ucdp.uu.se/downloads/index.html#ged_global" class="uri">https://ucdp.uu.se/downloads/index.html#ged_global</a>) The dataset has a RData version which we can directly load using R, so we don’t have any obstacle. The dataset contains records of armed conflicts that take place in the world from 1989 to 2018. The data include information like countries/parties of the conflict, its start and end times, the number of deaths caused by the conflict, etc.</p>
-<p>The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the future studies of this project, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or mothn, as follows (the example below is based on date):</p>
+<p>The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the future studies of this project, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or months, as follows (the example below is based on date):</p>
 <p>The transformed dataset is on our <a href="https://github.com/tonyytliu/edav_final_project">Project GitHub Repo</a>.</p>
 <pre class="r"><code>df_0 &lt;- data.frame(id=c(01,02), date_start=c(&quot;2000-01-01&quot;, &quot;2000-01-01&quot;),
                    date_end=c(&quot;2000-01-01&quot;, &quot;2000-01-03&quot;),
@@ -408,7 +408,6 @@ df_1 &lt;- data.frame(id=c(01,02, 02, 02),
                    date_start=c(&quot;2000-01-01&quot;, &quot;2000-01-01&quot;, &quot;2000-01-01&quot;, &quot;2000-01-01&quot;),
                    date_end=c(&quot;2000-01-01&quot;, &quot;2000-01-03&quot;, &quot;2000-01-03&quot;, &quot;2000-01-03&quot;),
                    dates = c(&quot;2000-01-01&quot;, &quot;2000-01-01&quot;, &quot;2000-01-02&quot;, &quot;2000-01-03&quot;),
-                   death=c(10,90,90,90),
                    avg_death = c(10,30,30,30))</code></pre>
 <p>transform</p>
 <pre class="r"><code>knitr::kable(df_0)</code></pre>
@@ -445,7 +444,6 @@ df_1 &lt;- data.frame(id=c(01,02, 02, 02),
 <th align="left">date_start</th>
 <th align="left">date_end</th>
 <th align="left">dates</th>
-<th align="right">death</th>
 <th align="right">avg_death</th>
 </tr>
 </thead>
@@ -456,14 +454,12 @@ df_1 &lt;- data.frame(id=c(01,02, 02, 02),
 <td align="left">2000-01-01</td>
 <td align="left">2000-01-01</td>
 <td align="right">10</td>
-<td align="right">10</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="left">2000-01-01</td>
 <td align="left">2000-01-03</td>
 <td align="left">2000-01-01</td>
-<td align="right">90</td>
 <td align="right">30</td>
 </tr>
 <tr class="odd">
@@ -471,7 +467,6 @@ df_1 &lt;- data.frame(id=c(01,02, 02, 02),
 <td align="left">2000-01-01</td>
 <td align="left">2000-01-03</td>
 <td align="left">2000-01-02</td>
-<td align="right">90</td>
 <td align="right">30</td>
 </tr>
 <tr class="even">
@@ -479,7 +474,6 @@ df_1 &lt;- data.frame(id=c(01,02, 02, 02),
 <td align="left">2000-01-01</td>
 <td align="left">2000-01-03</td>
 <td align="left">2000-01-03</td>
-<td align="right">90</td>
 <td align="right">30</td>
 </tr>
 </tbody>

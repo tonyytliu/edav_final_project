@@ -25,7 +25,7 @@ Yitao Liu (yl4343), Boyu Liu (bl2788), Yiyang Sun (ys3284)
 b) How do you plan to divide up the work? (Grading is on a group basis. The point of asking is to encourage you to think about this.)
 
 First of all, we want to do the data preprocessing first together. 
-Then we will split the work by exploring at different aspects of the data. Specifically, everyone will focus on one of the three questions.
+Then we will split the work by exploring at different aspects of the data. Specifically, each of us will focus on one of the three following questions.
 
 
 ### 2. The Questions
@@ -34,11 +34,12 @@ Then we will split the work by exploring at different aspects of the data. Speci
 
 List three questions that you hope you will be able to answer from your research.
 
-a) With time going, how voilence pattern changes in all regions.
+a) With time going, how voilence pattern changes in all regions?
 
-b) What's the difference for conflict patterns in different regions.
+b) What's the difference for conflict patterns in different regions?
 
-c) Whether thers is correlation between number of deaths and time or region. 
+c) Whether thers is correlation between number of deaths and time or region? 
+
 
 ### 3. Which output format do you plan to use to submit the project? 
 
@@ -105,7 +106,7 @@ ggplot(df_count, aes(x = year, y = n)) +
       labs(y = "number of conflicts")
 ```
 
-As shown in the bar chart, the number of conflicts that occur in each year tends to increase from 1998 to 2018. The number of conflicts is lowest in 1997-98.
+As shown in the bar chart, the number of conflicts that occur in each year tends to increase from 1998 to 2018. The number of conflicts is lowest in 1997.
 
 #### 2. Distribution of the number of deaths based on conflict
 ```{r, fig.width=10}

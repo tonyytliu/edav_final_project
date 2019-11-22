@@ -58,7 +58,7 @@ The original dataset lists conflicts based on their ids. Different conflicts hav
 
 The transformed dataset is on our [Project GitHub Repo](https://github.com/tonyytliu/edav_final_project).
 
-```{r}
+```{r, include=FALSE}
 df_0 <- data.frame(id=c(01,02), date_start=c("2000-01-01", "2000-01-01"),
                    date_end=c("2000-01-01", "2000-01-03"),
                    death=c(10,90))

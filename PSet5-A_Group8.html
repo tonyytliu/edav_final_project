@@ -399,8 +399,8 @@ summary {
 <h3>4. The Data</h3>
 <p>[5 points]</p>
 <p>UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (<a href="https://ucdp.uu.se/downloads/index.html#ged_global" class="uri">https://ucdp.uu.se/downloads/index.html#ged_global</a>) The dataset has a RData version which we can directly load using R, so we don’t have any obstacle. The dataset contains records of armed conflicts that take place in the world from 1989 to 2018. The data include information like countries/parties of the conflict, its start and end times, the number of deaths caused by the conflict, etc.</p>
-<p>The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the future studies of this project, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or months, as follows (the example below is based on date):</p>
-<p>The transformed dataset is on our <a href="https://github.com/tonyytliu/edav_final_project">Project GitHub Repo</a>.</p>
+<p>The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In certain parts of the future studies, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or months, as follows (the example below is based on date):</p>
+<p>The code of the transformation process and the transformed data are on our <a href="https://github.com/tonyytliu/edav_final_project">Project GitHub Repo</a>.</p>
 <p>transform</p>
 <pre class="r"><code>knitr::kable(df_0)</code></pre>
 <table>
@@ -474,7 +474,7 @@ summary {
 <div id="provide-a-short-summary-including-2-3-graphs-of-your-initial-investigations." class="section level3">
 <h3>5. Provide a short summary, including 2-3 graphs, of your initial investigations.</h3>
 <p>[10 points]</p>
-<p>In the initial investigations, we examined the number of conflicts that occurred in each year, the number of conflict-caused deaths in each year, and the geometric distribution of the conflict. Our summaries of those investigations are included in the following four subsections.</p>
+<p>In the initial investigations, we examined the number of conflicts that occurred in each year, the number of conflict-caused deaths in each year, and the geometric distribution of the conflict. Our summaries of those investigations are included in the following four subsections. Data for the following subsections are based on the conflicts’ starting years in the original dataset.</p>
 <div id="number-of-conflicts-based-on-year" class="section level4">
 <h4>1. Number of conflicts based on year</h4>
 <pre class="r"><code># Load the Dataset

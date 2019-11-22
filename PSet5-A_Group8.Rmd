@@ -54,9 +54,9 @@ We choose html_document as the output format.
 UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (https://ucdp.uu.se/downloads/index.html#ged_global)
 The dataset has a RData version which we can directly load using R, so we don't have any  obstacle. The dataset contains records of armed conflicts that take place in the world from 1989 to 2018. The data include information like countries/parties of the conflict, its start and end times, the number of deaths caused by the conflict, etc.
 
-The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In the future studies of this project, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or months, as follows (the example below is based on date):
+The original dataset lists conflicts based on their ids. Different conflicts have different durations. Some conflicts last for one day while some others last for months. In certain parts of the future studies, we might be interested in finding the pattern based on day/month. Therefore, in the data processing stage, we may want to transform the original dataset into a new one, which records the conflict based on each date or months, as follows (the example below is based on date):
 
-The transformed dataset is on our [Project GitHub Repo](https://github.com/tonyytliu/edav_final_project).
+The code of the transformation process and the transformed data are on our [Project GitHub Repo](https://github.com/tonyytliu/edav_final_project).
 
 ```{r, include=FALSE}
 df_0 <- data.frame(id=c(01,02), date_start=c("2000-01-01", "2000-01-01"),
@@ -84,7 +84,7 @@ knitr::kable(df_1)
 
 [10 points]
 
-In the initial investigations, we examined the number of conflicts that occurred in each year, the number of conflict-caused deaths in each year, and the geometric distribution of the conflict. Our summaries of those investigations are included in the following four subsections.
+In the initial investigations, we examined the number of conflicts that occurred in each year, the number of conflict-caused deaths in each year, and the geometric distribution of the conflict. Our summaries of those investigations are included in the following four subsections. Data for the following subsections are based on the conflicts' starting years in the original dataset.
 
 #### 1. Number of conflicts based on year
 ```{r}

@@ -21,7 +21,14 @@ df_process <- ged191 %>%
 ```
 Add the duration of each conflicts.
 ```{r}
-df_process$duration = df_process$date_end - df_process$date_start + 1
+duration_mon <- function(end, start){
+  # reference to https://stackoverflow.com/questions/1995933/number-of-months-between-two-dates
+  ed <- as.POSIXlt(end)
+  sd <- as.POSIXlt(start)
+  md <- 12 * (ed$year - sd$year) + (ed$mon - sd$mon) + 1
+  return(md)
+}
+df_process$duration_month = duration_mon(df_process$date_end, df_process$date_start)
 ```
 
 Expand the data frame based on dates, that is
@@ -31,7 +38,7 @@ transform
 + id + date_start +  date_end  +
 +----+------------+------------+
 + 01 + 2000-01-01 + 2000-01-01 +
-+ 02 + 2000-01-01 + 2000-01-03 +
++ 02 + 2000-01-01 + 2000-02-01 +
 +----+------------+------------+
 
 to
@@ -40,32 +47,33 @@ to
 + id + date_start +  date_end  +    date    +
 +----+------------+------------+------------+
 + 01 + 2000-01-01 + 2000-01-01 + 2000-01-01 +
-+ 02 + 2000-01-01 + 2000-01-03 + 2000-01-01 +
-+ 02 + 2000-01-01 + 2000-01-03 + 2000-01-02 +
-+ 02 + 2000-01-01 + 2000-01-03 + 2000-01-03 +
++ 02 + 2000-01-01 + 2000-02-01 + 2000-01-01 +
++ 02 + 2000-01-01 + 2000-02-01 + 2000-02-01 +
 +----+------------+------------+------------+
 
 
 ```{r}
 temp <- df_process %>%
         rowwise() %>%
-        do(data.frame(id = .$id, dates=seq(.$date_start,.$date_end,by="1 day")))
+        do(data.frame(id = .$id, dates=seq(.$date_start,.$date_end,by="1 month")))
 
 df_new <- merge(df_process, temp, by="id")
 ```
 ```{r}
 df_new <- df_new %>%
-          mutate(avg_deaths_a = deaths_a/as.numeric(duration),
-                 avg_deaths_b = deaths_b/as.numeric(duration),
-                 avg_deaths_civilians = deaths_civilians/as.numeric(duration),
-                 avg_deaths_unknown = deaths_unknown/as.numeric(duration),
-                 avg_best = best/as.numeric(duration),
-                 avg_high = high/as.numeric(duration),
-                 avg_low = low/as.numeric(duration))
+          mutate(avg_deaths_a = deaths_a/as.numeric(duration_month),
+                 avg_deaths_b = deaths_b/as.numeric(duration_month),
+                 avg_deaths_civilians = deaths_civilians/as.numeric(duration_month),
+                 avg_deaths_unknown = deaths_unknown/as.numeric(duration_month),
+                 avg_best = best/as.numeric(duration_month),
+                 avg_high = high/as.numeric(duration_month),
+                 avg_low = low/as.numeric(duration_month))
 ```
 
 Save Data
 ```{r}
 save(df_new, file = here("data", "clean", "df_new.RData"))
 ```
+
+
 

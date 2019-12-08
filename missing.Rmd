@@ -14,6 +14,7 @@ library(ggpubr)
 library(mapproj)
 library(scales)
 library(naniar)
+library(extracat)
 ```
 
 ### Missing patterns
@@ -27,6 +28,8 @@ library(naniar)
 gg_miss_var(df_process)+
   ggtitle("Missing column patterns by decreasing number of missing values")+
   theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))
+library(extracat)
+visna(df_process,sort='c')
 ```
 
 There are only 2 variables that contains a lot of missing variables, gwnob and gwnoa. gwnoa is The Gleditsch and Ward number for Side A if the side is a state. If side A is not a state, then gwnoa will be missing. Similarly, gwnob is The Gleditsch and Ward number for Side B. It will be missing if side B is not a state. The reason why gwnob has more missing values is that in one-sided violence, side B will be recorded as "civilians" in this dataset, which is definitely not a state.
@@ -37,5 +40,6 @@ However, for row patterns, we already know that, in each row, if side A is not a
 gg_miss_case(df_process)+
   ggtitle("Missing row patterns by decreasing number of missing values")+
   theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))
+visna(df_process,sort='r')
 ```
 From the graph, we can see that most rows has at least one missing value, which correspondes to our analysis for column patterns that gwnob of most rows are missing. 

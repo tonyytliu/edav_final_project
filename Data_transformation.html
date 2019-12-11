@@ -373,7 +373,7 @@ summary {
 <p>The dataset we chose is very larger, to save the space, we would like to reduce the dataset only with columns we are might be interested in (as described in Chapter 2). The transformed dataset is stored in “data/clean/df_process.RData”. But in certain instances, we may want to use the original dataset (for example, missing value analysis).</p>
 <p>In our study, we find the most extreme values of this dataset are related to the <a href="https://en.wikipedia.org/wiki/Rwandan_genocide">Rwanda genocide</a> in 1994, which we will have detailed explanations in the following chapters. Sometimes, we need to include these records in our analysis, and sometimes we don’t. Therefore, we decide to have a data frame to record the unique conflict event ID of records related to the Rwanda genocide. Then we can quickly include and filter our these records in our future coding. The data frame is stored as “data/clean/df_rwa.RData”.</p>
 <p>For other transformations made for analysis and visualization, please refer to our code on GitHub <a href="https://github.com/tonyytliu/edav_final_project">repo</a>.</p>
-<p>In our project, we would also like to investigate the geographic or spatial pattern of the data via the D3 interactive plot. However, some countries’ names in the D3’s geo-map (list of countries are in “data/raw/global-country.tsv”) are different from what we have in the dataset. For the data used in D3, we need to change the country names to make them identical to those in D3’s geo-map. The following countries have different names. The modified data file is stored as “data/clean/df_d3.csv”.</p>
+<p>In our project, we would also like to investigate the geographic or spatial pattern of the data via the D3 interactive plot. However, some countries/regions’ names in the D3’s geo-map (list of countries are in “data/raw/global-country.tsv”) are different from what we have in the dataset. For the data used in D3, we need to change the country names to make them identical to those in D3’s geo-map. The following countries/regions have different names. The modified data file is stored as “data/clean/df_d3.csv”.</p>
 <table>
 <thead>
 <tr class="header">
@@ -433,6 +433,18 @@ summary {
 <tr class="odd">
 <td align="left">DR Congo (Zaire)</td>
 <td align="left">DR Congo</td>
+</tr>
+<tr class="even">
+<td align="left">North Korea</td>
+<td align="left">Korea, North</td>
+</tr>
+<tr class="odd">
+<td align="left">South Korea</td>
+<td align="left">Korea, South</td>
+</tr>
+<tr class="even">
+<td align="left">China</td>
+<td align="left">China, Mainland</td>
 </tr>
 </tbody>
 </table>

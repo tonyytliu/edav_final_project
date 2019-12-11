@@ -52,7 +52,7 @@ df_rwa <- df_process %>%
 save(df_rwa, file = here("data", "clean", "df_rwa.RData"))
 ```
 
-In our project, we would also like to investigate the geographic or spatial pattern of the data via the D3 interactive plot. However, some countries' names in the D3's geo-map (list of countries are in "data/raw/global-country.tsv") are different from what we have in the dataset. For the data used in D3, we need to change the country names to make them identical to those in D3's geo-map. The following countries have different names. The modified data file is stored as "data/clean/df_d3.csv".
+In our project, we would also like to investigate the geographic or spatial pattern of the data via the D3 interactive plot. However, some countries/regions' names in the D3's geo-map (list of countries are in "data/raw/global-country.tsv") are different from what we have in the dataset. For the data used in D3, we need to change the country names to make them identical to those in D3's geo-map. The following countries/regions have different names. The modified data file is stored as "data/clean/df_d3.csv".
 
 ```{r echo= FALSE, results= 'asis'}
 county_name = data.frame(
@@ -68,7 +68,10 @@ county_name = data.frame(
                    "Rumania",
                    "United States of America",
                    "Madagascar (Malagasy)",
-                   "DR Congo (Zaire)"
+                   "DR Congo (Zaire)",
+                   "North Korea",
+                   "South Korea",
+                   "China"
                ),
   in_d3_geo =c("Russia",
                "Yemen",
@@ -82,7 +85,10 @@ county_name = data.frame(
                "Romania",
                "United States",
                "Madagascar",
-               "DR Congo"
+               "DR Congo",
+               "Korea, North",
+               "Korea, South",
+               "China, Mainland"
                  ) )
 kable(county_name)
 ```
@@ -116,7 +122,10 @@ df_d3$country <-plyr::mapvalues(df_d3$country,
                    "Rumania",
                    "United States of America",
                    "Madagascar (Malagasy)",
-                   "DR Congo (Zaire)"
+                   "DR Congo (Zaire)",
+                   "North Korea",
+                   "South Korea",
+                   "China"
                ),
           to=c("Russia",
                "Yemen",
@@ -130,7 +139,10 @@ df_d3$country <-plyr::mapvalues(df_d3$country,
                "Romania",
                "United States",
                "Madagascar",
-               "DR Congo"
+               "DR Congo",
+               "Korea, North",
+               "Korea, South",
+               "China, Mainland"
                  ) 
           )
 

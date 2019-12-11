@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Interactive
 
 This is the interactive part of our conflict anaylsis. 
-We store the data in out github repo (https://github.com/sunyiyangallan/Conflict-Map) and ged191.csv is the original file, and we cleaned up that file and get df_d3.csv using R (as mentioned in the previous chapters).
+We store the data in the github repo (https://github.com/sunyiyangallan/Conflict-Map), the cleaned up that file and get df_d3.csv using R (as mentioned in the previous chapters).
 
 Please click [this link](https://bl.ocks.org/sunyiyangallan/raw/13bed51f18a1e4f2e0834f5ef52ee637/69016912fdce8e3749809507d6a58d2e6638fab1/) to view our interactive plot (https://bl.ocks.org/sunyiyangallan/raw/13bed51f18a1e4f2e0834f5ef52ee637/69016912fdce8e3749809507d6a58d2e6638fab1/). It may take sometime to load the plot. 
 
@@ -25,6 +25,11 @@ Instructions for using the plot:
 4. Users can select the year of interest on the top left part of the plot. If a different year is chosen, the circles will be redrawn, so please be patient. 
 5. The total number of death is calculated using the "best" column in the dataset, which means the best estimate of the number of death. 
 6. The dataset does not contain data from Syria. Therefore, conflict data in Syria is currently unavailable.
+
+A short demo of the interactive plot:
+<center>
+![](https://raw.githubusercontent.com/tonyytliu/world_conflict_data/master/d3_interactive/demo/d3demo.gif){ width=80% }
+</center>
 
 Reference:
 

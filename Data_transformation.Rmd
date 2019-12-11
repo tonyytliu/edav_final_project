@@ -69,8 +69,6 @@ county_name = data.frame(
                    "United States of America",
                    "Madagascar (Malagasy)",
                    "DR Congo (Zaire)",
-                   "North Korea",
-                   "South Korea",
                    "China"
                ),
   in_d3_geo =c("Russia",
@@ -86,8 +84,6 @@ county_name = data.frame(
                "United States",
                "Madagascar",
                "DR Congo",
-               "Korea, North",
-               "Korea, South",
                "China, Mainland"
                  ) )
 kable(county_name)
@@ -123,8 +119,6 @@ df_d3$country <-plyr::mapvalues(df_d3$country,
                    "United States of America",
                    "Madagascar (Malagasy)",
                    "DR Congo (Zaire)",
-                   "North Korea",
-                   "South Korea",
                    "China"
                ),
           to=c("Russia",
@@ -140,8 +134,6 @@ df_d3$country <-plyr::mapvalues(df_d3$country,
                "United States",
                "Madagascar",
                "DR Congo",
-               "Korea, North",
-               "Korea, South",
                "China, Mainland"
                  ) 
           )

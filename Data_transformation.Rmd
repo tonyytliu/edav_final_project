@@ -90,7 +90,7 @@ kable(county_name)
 ```{r}
 d3_country <- read.delim(here("data", "raw","global-country.tsv"))
 df_d3 = df_process %>%
-        select(country, year, low, high, best, longitude, latitude)
+        select(id, country, year, best, longitude, latitude)
 ```
 
 ```{r}

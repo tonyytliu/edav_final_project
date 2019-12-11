@@ -35,7 +35,6 @@ df_process <- ged191 %>%
                      deaths_b, deaths_civilians, best, low, high)
 # save the data to the cleaning data
 save(df_process, file = here("data", "clean", "df_process.RData"))
-write.csv(df_process, file = here("data", "clean", "df_process.csv"))
 ```
 
 In our study, we find the most extreme values of this dataset are related to the [Rwanda genocide](https://en.wikipedia.org/wiki/Rwandan_genocide) in 1994, which we will have detailed explanations in the following chapters. Sometimes, we need to include these records in our analysis, and sometimes we don't. Therefore, we decide to have a data frame to record the unique conflict event ID of records related to the Rwanda genocide. Then we can quickly include and filter our these records in our future coding. The data frame is stored as "data/clean/df_rwa.RData".
@@ -53,109 +52,96 @@ df_rwa <- df_process %>%
 save(df_rwa, file = here("data", "clean", "df_rwa.RData"))
 ```
 
-In our project, we would also like to investigate the geographic or spatial pattern of the data. We use the `world` map data from ggplot's map_data. However, some countries' names in the `world` are different from what we have in the dataset.  We want to modify the country name of `world` map data to make them identical with the name in our dataset. The following countries have different names. The modified `world` data file is stored as "data/clean/WorldData.RData".
+In our project, we would also like to investigate the geographic or spatial pattern of the data via the D3 interactive plot. However, some countries' names in the D3's geo-map (list of countries are in "data/raw/global-country.tsv") are different from what we have in the dataset. For the data used in D3, we need to change the country names to make them identical to those in D3's geo-map. The following countries have different names. The modified data file is stored as "data/clean/df_d3.csv".
 
 ```{r echo= FALSE, results= 'asis'}
 county_name = data.frame(
-  in_ggplot_map = c("Democratic Republic of the Congo",
-               "Republic of Congo",
-               "Russia",
+  in_dataset = c("Russia (Soviet Union)",
+                   "Yemen (North Yemen)",
+                   "Myanmar (Burma)",
+                   "Cambodia (Kampuchea)",
+                   "Ivory Coast",
+                   "Zimbabwe (Rhodesia)",
+                   "Serbia (Yugoslavia)",
+                   "Macedonia, FYR",
+                   "Kingdom of eSwatini (Swaziland)",
+                   "Rumania",
+                   "United States of America",
+                   "Madagascar (Malagasy)",
+                   "DR Congo (Zaire)"
+               ),
+  in_d3_geo =c("Russia",
                "Yemen",
                "Myanmar",
                "Cambodia",
-               "UK",
+               "Cote d'Ivoire",
                "Zimbabwe",
-               "Bosnia and Herzegovina",
                "Serbia",
                "Macedonia",
                "Swaziland",
                "Romania",
-               "Trinidad",
-               "Tobago",
-               "USA",
-               "Madagascar"
-               ),
-  in_dataset =c("DR Congo (Zaire)",
-                 "Congo",
-                 "Russia (Soviet Union)",
-                 "Yemen (North Yemen)",
-                 "Myanmar (Burma)",
-                 "Cambodia (Kampuchea)",
-                 "United Kingdom",
-                 "Zimbabwe (Rhodesia)",
-                 "Bosnia-Herzegovina",
-                 "Serbia (Yugoslavia)",
-                 "Macedonia, FYR",
-                 "Kingdom of eSwatini (Swaziland)",
-                 "Rumania",
-                 "Trinidad and Tobago",
-                 "Trinidad and Tobago",
-                 "United States of America",
-                 "Madagascar (Malagasy)"
+               "United States",
+               "Madagascar",
+               "DR Congo"
                  ) )
 kable(county_name)
 ```
 
 ```{r}
-# template code for getting world data refer to  https://stackoverflow.com/questions/30706124/plotting-the-world-map-in-r
-WorldData <- map_data('world') %>% filter(region != "Antarctica") %>% fortify
+d3_country <- read.delim(here("data", "raw","global-country.tsv"))
+df_d3 = df_process %>%
+        select(country, year, low, high, best, longitude, latitude)
+```
 
-a <- setNames(as.data.frame(unique(df_process$country)), "country")
+```{r}
+a <- setNames(as.data.frame(unique(df_d3$country)), "country")
 a$country2 = a$country
 
-b <- setNames(as.data.frame(unique(WorldData$region)), "region")
-b$region2 = b$region
+b <- setNames(as.data.frame(unique(d3_country$name)), "name")
+b$name2 = b$name
 
-#check the differences
-temp4 <- full_join(a, b, by = c("country" = "region"))
+temp4 <- full_join(a, b, by = c("country" = "name"))
 
 
-WorldData$region <-plyr::mapvalues(WorldData$region, 
-            from=c("Democratic Republic of the Congo",
-               "Republic of Congo",
-               "Russia",
+df_d3$country <-plyr::mapvalues(df_d3$country, 
+            from=c("Russia (Soviet Union)",
+                   "Yemen (North Yemen)",
+                   "Myanmar (Burma)",
+                   "Cambodia (Kampuchea)",
+                   "Ivory Coast",
+                   "Zimbabwe (Rhodesia)",
+                   "Serbia (Yugoslavia)",
+                   "Macedonia, FYR",
+                   "Kingdom of eSwatini (Swaziland)",
+                   "Rumania",
+                   "United States of America",
+                   "Madagascar (Malagasy)",
+                   "DR Congo (Zaire)"
+               ),
+          to=c("Russia",
                "Yemen",
                "Myanmar",
                "Cambodia",
-               "UK",
+               "Cote d'Ivoire",
                "Zimbabwe",
-               "Bosnia and Herzegovina",
                "Serbia",
                "Macedonia",
                "Swaziland",
                "Romania",
-               "Trinidad",
-               "Tobago",
-               "USA",
-               "Madagascar"
-               ),
-          to=c("DR Congo (Zaire)",
-                 "Congo",
-                 "Russia (Soviet Union)",
-                 "Yemen (North Yemen)",
-                 "Myanmar (Burma)",
-                 "Cambodia (Kampuchea)",
-                 "United Kingdom",
-                 "Zimbabwe (Rhodesia)",
-                 "Bosnia-Herzegovina",
-                 "Serbia (Yugoslavia)",
-                 "Macedonia, FYR",
-                 "Kingdom of eSwatini (Swaziland)",
-                 "Rumania",
-                 "Trinidad and Tobago",
-                 "Trinidad and Tobago",
-                 "United States of America",
-                 "Madagascar (Malagasy)"
+               "United States",
+               "Madagascar",
+               "DR Congo"
                  ) 
           )
 
-a <- setNames(as.data.frame(unique(df_process$country)), "country")
+a <- setNames(as.data.frame(unique(df_d3$country)), "country")
 a$country2 = a$country
 
-b <- setNames(as.data.frame(unique(WorldData$region)), "region")
-b$region2 = b$region
+b <- setNames(as.data.frame(unique(d3_country$name)), "name")
+b$name2 = b$name
 
-temp5 <- full_join(a, b, by = c("country" = "region"))
+temp5 <- full_join(a, b, by = c("country" = "name"))
 
-save(WorldData, file = here("data", "clean", "WorldData.RData"))
+write.csv(df_d3, file = here("data", "clean", "df_d3.csv"))
 ```
+

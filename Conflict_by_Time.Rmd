@@ -1,0 +1,359 @@
+---
+title: "Conflict_by_Time"
+output: html_document
+---
+```{r, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
+library(dplyr)
+library(here)
+library(ggplot2)
+library(ggpubr)
+library(scales)
+library(mapproj)
+library(knitr)
+```
+
+
+## 1. Basic information of the dataset
+
+UCDP Georeferenced Event Dataset (GED) Global version 19.1 from UCDP Dataset (https://ucdp.uu.se/downloads/index.html#ged_global) is used in our project, the dataset has a RData version which we can directly load using R. 
+
+Each record in the dataset is an event of a specific conflict. An event of a conflict is defined as "An incident where armed force was used by an organized actor against another organized actor, or against civilians." [[source](https://ucdp.uu.se/downloads/ged/ged191.pdf)]. 
+
+To avoid potential ambiguities, "conflict event" is used in our project to express the term "event" in the original terminology. This dataset contains data of armed conflict events from a world-wide perspective, from 1989 to 2018; includes the time, geographic location, type, casualties, and other information regarding the conflict event. 
+
+```{r}
+load(here("data", "raw", "ged191.RData"))
+load(here("data", "clean", "df_process.RData"))
+load(here("data", "clean", "df_rwa.RData"))
+load(here("data", "clean", "WorldData.RData"))
+```
+
+We first want to check NAs in the dataset. In our research, we want to focus on specific variables, and we want to check whether there are NAs among those variables. The following are the variables and their explanations.
+Explanations are referred from the codebook of the dataset [[source](https://ucdp.uu.se/downloads/ged/ged191.pdf)].
+
+```{r echo= FALSE, results= 'asis'}
+var_ex = data.frame(
+  Variable = c("id",
+               "date_start",
+               "date_end",
+               "year",
+               "active_year",
+               "type_of_violence",
+               "side_a/side_b",
+               "longitude/latitude",
+               "country",
+               "region",
+               "death_*",
+               "best",
+               "high/low"),
+  Explanation = c("An unique ID identifying a conflict event",
+                "The earliest possible date when the conflict event has taken place",
+                "The last possible date when the conflict event has taken place",
+                "The year of the conflict event",
+                "1: belongs to an active conflict",
+                "1: state-based conflict (involved with a government of a state or any opposition organization or alliance of organizations); 2: non-state conflict (between organized armed groups); 3: one-sided violence (against civilians)",
+                "The name of the two sides",
+                "Best estimated or the actual location of the conflict event takes place",
+                "Name of the country of the conflict event takes place",
+                "Africa, Americas, Asia, Europe, Middle East",
+                "Best estimate of fatalities for the specific group",
+                "Best estimate of fatalities resulting from the conflict event",
+                "The highest/lowest estimation of the total fatalities"))
+kable(var_ex)
+```
+
+
+```{r, echo=TRUE}
+sum(is.na(ged191%>%
+  select(id, date_start, date_end, 
+         year, active_year, type_of_violence, conflict_name, 
+         side_a, side_b, longitude, latitude,
+         country, region, 
+         deaths_a, deaths_b, deaths_civilians, deaths_unknown,
+         best, high, low)))
+```
+
+There is no NAs in the variables we are most instersted in. 
+
+```{r}
+# formatting the datetime
+# df_process <- ged191 %>%
+#               mutate(date_start = as.Date(date_start),
+#                      date_end = as.Date(date_end))
+df_count <- df_process %>%
+            group_by(year) %>%
+            tally()
+```
+
+## 2. Distribution of the number of deaths based on conflict
+
+```{r, fig.width=10}
+g1 <- ggplot(df_process, aes(x = best)) + 
+        geom_histogram(bins = 20, colour = "#80593D", fill = "steelblue") +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of deaths caused by conflict events")
+# only small values
+df_process2 <- df_process %>%
+              filter(best < 100)
+g2<- ggplot(df_process2, aes(x = best)) + 
+        geom_histogram(bins = 100, colour = "#80593D", fill = "steelblue") +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of conflicts deaths caused by conflict events",
+                subtitle = "with death < 100")
+
+df_process3 <- df_process %>%
+              filter(best < 20)
+g3<- ggplot(df_process3, aes(x = best)) + 
+        geom_histogram(bins = 20, colour = "#80593D", fill = "steelblue") +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of conflicts deaths caused by conflict events",
+                subtitle = "with death < 20")
+
+df_process4<- df_process %>%
+              filter(best >= 10000)
+g4<- ggplot(df_process4, aes(x = best)) + 
+        geom_histogram(bins = 20, colour = "#80593D", fill = "steelblue", boundary=10000) +
+        scale_x_continuous(breaks= pretty_breaks()) +
+        ggtitle("Distribution of conflicts deaths caused by conflict events",
+                subtitle = "with death >= 10,000")
+
+ggarrange(g1, g2, g3, g4, ncol = 2, nrow = 2)
+```
+As shown in the top-left plot, the dataset is highly skewed and imbalanced.  When we focus on the data with death less than 100 people, we can see the data are more concentrated in <20 regions. Most conflict events have less than five deaths.
+
+
+```{r}
+options(scipen = 999)
+df_process5<- df_process %>%
+              filter(best >= 5000)%>%
+              mutate(best_in_1k = best/1000, 
+                     name = paste(id, ":", country))
+
+ggplot(df_process5, aes(x = best_in_1k, y = reorder(name, best))) +
+      geom_point(color = "steelblue") +
+      labs(x="Best estimated deaths of people in 1,000",
+           y="Confict Event ID: Country") + 
+      ggtitle("Confict events causing most deaths")
+```
+
+The above Cleveland plot shows top conflict events which caused most deaths ($\geq$ 5,000), there is a conflict event happened in Rwanda caused approximately 300,000 deaths, which is much more than other conflicts event. Also, most of those events causing significant fatalities were taken place in Rwanda. 
+
+```{r}
+# The conflict with largest death
+df_2<- head(df_process[order(-df_process$best),], 10)[c("id", "side_a", "side_b", "year", "best")]
+knitr::kable(df_2)
+```
+
+After an investigation of those conflict events, we found out most of them are between the Government of Rewanda and civilians, which was related to the [Rwanda genocide](https://en.wikipedia.org/wiki/Rwandan_genocide) in 1994.
+
+## 3. Relation between conflict and time
+
+```{r, fig.width=5, fig.height=3}
+df_count <- df_process %>%
+            group_by(year) %>%
+            tally()
+ggplot(df_count, aes(x = year, y = n)) +
+      geom_bar(stat = "identity", fill = "steelblue") +
+      ggtitle("Number of conflict events based on year") +
+      labs(y = "number of conflict events")
+```
+
+As shown in the bar chart, the number of conflict events that occur in each year tends to increase from 1998 to 2018. The number of conflicts is lowest in 1997.
+```{r}
+# get conflicts' deaths by year
+df_sum <- df_process %>%
+            group_by(year) %>%
+            summarise_at(vars(best), funs(sum))
+
+
+# get conflicts' deaths by year without the Rwanda genocide
+df_sum2 <- df_process %>%
+            filter(!(df_process$id %in% df_rwa$id)) %>%
+            group_by(year) %>%
+            summarise_at(vars(best), funs(sum))
+```
+```{r, fig.width=10, fig.height=3}
+g5<- ggplot(df_sum, aes(x = year, y = best)) +
+        geom_bar(stat = "identity", fill = "steelblue") +
+        ggtitle("Deaths caused by conflicts based on year") +
+        labs(y = "number of deaths")
+
+g6<- ggplot(df_sum2, aes(x = year, y = best)) +
+        geom_bar(stat = "identity", fill = "steelblue") +
+        ggtitle("Deaths caused by conflicts based on year",
+                subtitle="without the data of the Rwanda genocide") +
+        labs(y = "number of deaths")
+
+ggarrange(g5, g6, ncol = 2, nrow = 1)
+```
+
+The conflict-caused deaths are extremely high in 1994, as shown in the left plot. As mentioned in the previous point,  a high number of deaths were probably related to the Rwanda genocide. When we filter out the data related to the Rwanda genocide, we get the plot on the right. The conflict-caused death per year decreased from 1989 until 2005, after 2005, the number tends to increase.
+
+```{r}
+df_type <- df_process %>%
+              group_by(year, type_of_violence) %>%
+              tally()  %>%
+              mutate(type_of_violence = ifelse(type_of_violence == 1, "state-based conflict",
+                                               ifelse(type_of_violence == 2, "non-state conflict", "one-side violence")))
+ggplot(df_type, aes(fill=type_of_violence, x=year, y=n)) + 
+    geom_bar(position="dodge", stat="identity") + 
+    theme(legend.position='bottom') +
+    labs(x="year", y="number of conflict events", fill="violence type") + 
+    ggtitle("Number of conflict events based on year and type")
+```
+
+Most conflict events are state-based conflict, i.e., the conflict involved with "[a] government of a state or any opposition organization or alliance of organizations" [[source](https://ucdp.uu.se/downloads/ged/ged191.pdf), pp.28-29], which is higher in number comparing to the other two types of conflict. Before 2018, there are more one-side conflicts (against civilians) than non-state conflicts (between two armed groups).  But in 2018, there are more non-state conflicts compare to one-side conflict. 
+
+If you are interested in the detailed and formal definition of these three types of conflict, please refer to this [source](https://ucdp.uu.se/downloads/ged/ged191.pdf), pp. 28-31.
+
+
+
+```{r}
+# template code for getting world data refer to  https://stackoverflow.com/questions/30706124/plotting-the-world-map-in-r
+WorldData <- map_data('world') %>% filter(region != "Antarctica") %>% fortify
+```
+
+
+```{r}
+a <- setNames(as.data.frame(unique(df_process$country)), "country")
+a$country2 = a$country
+
+b <- setNames(as.data.frame(unique(WorldData$region)), "region")
+b$region2 = b$region
+
+#check the differences
+temp4 <- full_join(a, b, by = c("country" = "region"))
+
+
+WorldData$region <-plyr::mapvalues(WorldData$region, 
+            from=c("Democratic Republic of the Congo",
+               "Republic of Congo",
+               "Russia",
+               "Yemen",
+               "Myanmar",
+               "Cambodia",
+               "UK",
+               "Zimbabwe",
+               "Bosnia and Herzegovina",
+               "Serbia",
+               "Macedonia",
+               "Swaziland",
+               "Romania",
+               "Trinidad",
+               "Tobago",
+               "USA",
+               "Madagascar"
+               ),
+          to=c("DR Congo (Zaire)",
+                 "Congo",
+                 "Russia (Soviet Union)",
+                 "Yemen (North Yemen)",
+                 "Myanmar (Burma)",
+                 "Cambodia (Kampuchea)",
+                 "United Kingdom",
+                 "Zimbabwe (Rhodesia)",
+                 "Bosnia-Herzegovina",
+                 "Serbia (Yugoslavia)",
+                 "Macedonia, FYR",
+                 "Kingdom of eSwatini (Swaziland)",
+                 "Rumania",
+                 "Trinidad and Tobago",
+                 "Trinidad and Tobago",
+                 "United States of America",
+                 "Madagascar (Malagasy)"
+                 ) 
+          )
+
+a <- setNames(as.data.frame(unique(df_process$country)), "country")
+a$country2 = a$country
+
+b <- setNames(as.data.frame(unique(WorldData$region)), "region")
+b$region2 = b$region
+
+temp5 <- full_join(a, b, by = c("country" = "region"))
+```
+```{r, fig.width=10,fig.height=16}
+years <- c(1989:2018)
+temp <- df_process %>% filter(year %in% years) %>%
+        select(country, best, year)%>%
+        group_by(country, year)%>%
+        summarise(best = sum(best))
+temp2 <- data.frame()
+for(i in years){
+  temp3 = setNames(as.data.frame(unique(WorldData$region)), "country")
+  temp3$year = i
+  temp2 <- rbind(temp2, temp3)
+}
+
+temp <- right_join(temp, temp2, by=c("country", "year"))
+        
+
+# gm <- ggplot(WorldData, aes(long, lat)) + 
+#     	geom_polygon(aes(group=group),fill="white",colour="black",size=0.1) +
+#     	coord_equal() + 
+#     	scale_x_continuous(expand=c(0,0)) + 
+#     	scale_y_continuous(expand=c(0,0)) +
+#     	labs(x='Longitude', y='Latitude') +
+#     	theme_bw()
+
+
+# ggplot(temp, aes(map_id = country)) + 
+#   geom_map(aes(fill = best), map = WorldData, colour="grey70",size=0.1) +
+#   scale_fill_gradient(low = "#ffebeb", high = "darkred", na.value="#ebfaec",
+#                       limits=c(0,5000), oob=squish) +
+#   # scale_fill_viridis_c(limits=c(0,10000), oob=squish)+
+#   coord_map("rectangular", lat0=0, xlim=c(-180,180), ylim=c(-60, 90)) +
+#   labs(fill="legend", title="Total fatalities caused by conflict event",
+#        subtitle="based on countries/regions", 
+#        x="", y="") +
+#   theme_bw() +
+#   facet_wrap(~year, ncol=3) 
+```
+
+```{r, fig.width=10,fig.height=5}
+# temp6 <- df_process %>% filter(best >0) %>% arrange((best))
+# 
+# ggplot() + 
+#     geom_map(data = WorldData, map = WorldData,
+#                   aes(map_id=region),
+#                   fill = "white", colour = "grey80", size=0.5) + 
+#     geom_point(data=temp6, aes(x=longitude, y=latitude, color=best),
+#                size=0.8, alpha=0.5) +
+#     scale_color_gradient(low = "#d9d9ff", high = "darkred", na.value="#ebfaec",
+#                         limits=c(1,300), oob=squish) +
+#     coord_map("rectangular", lat0=0, xlim=c(-180,180), ylim=c(-60, 90)) +
+#     labs(fill="legend", title="Total fatalities caused by conflict event",
+#          subtitle="based on countries/regions", 
+#          x="", y="") +
+#     theme_bw() 
+```
+
+```{r, fig.width=10,fig.height=5}
+temp6 <- df_process %>% arrange((best))
+
+# ggplot() + 
+#     geom_map(data = WorldData, map = WorldData,
+#                   aes(map_id=region),
+#                   fill = "white", colour = "grey80", size=0.5) + 
+#     geom_point(data=temp6, aes(x=longitude, y=latitude, color=type_of_violence),
+#                size=0.8, alpha=0.5) +
+#     coord_map("rectangular", lat0=0, xlim=c(-180,180), ylim=c(-60, 90)) +
+#     labs(fill="legend", title="Total fatalities caused by conflict event",
+#          subtitle="based on countries/regions", 
+#          x="", y="") +
+#     theme_bw() 
+
+ggplot() + 
+    geom_map(data = WorldData, map = WorldData,
+                  aes(map_id=region),
+                  fill = "#1F273E", colour = "#384770", size=0.5) + 
+    geom_point(data=temp6, aes(x=longitude, y=latitude, color=type_of_violence),
+               size=0.8, alpha=0.5) +
+    coord_map("rectangular", lat0=0, xlim=c(-180,180), ylim=c(-60, 90)) +
+    labs(fill="legend", title="Total fatalities caused by conflict event",
+         subtitle="based on countries/regions", 
+         x="", y="") +
+    theme(panel.background = element_rect(fill = "#191F31",
+                                colour = "#191F31"))
+```
